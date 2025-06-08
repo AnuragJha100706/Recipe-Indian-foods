@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Recommender</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; }
+    .container {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0002;
+      padding: 2.5rem 2rem 2rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    h2 {
+      text-align: center;
+      color: #2196f3;
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    form {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1769aa;
+      font-size: 1.1rem;
+    }
+    textarea {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1.5px solid #b3c6e0;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      background: #f4f8fb;
+      transition: border 0.2s;
+      resize: vertical;
+    }
+    textarea:focus {
+      border: 1.5px solid #2196f3;
+      outline: none;
+      background: #eaf4fb;
+    }
+    button {
+      background: linear-gradient(90deg, #2196f3 60%, #21cbf3 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #2196f320;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    button:active {
+      background: #1769aa;
+      box-shadow: 0 1px 2px #2196f320;
+    }
+    #clearBtn {
+      background: linear-gradient(90deg, #f44336 60%, #ff7961 100%);
+      margin-left: 0.5rem;
+    }
+    #clearBtn:active {
+      background: #b71c1c;
+    }
+    .accordion {
+      margin-top: 2rem;
+    }
+    .accordion-item {
+      margin-bottom: 18px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #0001;
+      background: #f7fbff;
+      transition: box-shadow 0.2s;
+    }
+    .accordion-item:hover {
+      box-shadow: 0 4px 16px #2196f320;
+    }
+    .accordion-title {
+      background: linear-gradient(90deg, #2196f3 80%, #21cbf3 100%);
+      color: #fff;
+      padding: 16px 22px;
+      border-radius: 10px 10px 0 0;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .accordion-title span {
+      font-size: 1.3rem;
+      margin-right: 8px;
+      transition: transform 0.2s;
+    }
+    .accordion-content {
+      background: #f9f9f9;
+      padding: 20px 24px 18px 24px;
+      border-radius: 0 0 10px 10px;
+      animation: fadeIn 0.4s;
+      font-size: 1.08rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    ul, ol {
+      margin: 0 0 1rem 1.5rem;
+    }
+    ul li, ol li {
+      margin-bottom: 0.3rem;
+    }
+    .recipe-img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px #0002;
+      margin-bottom: 1rem;
+      transition: transform 0.2s;
+    }
+    .recipe-img:hover {
+      transform: scale(1.03);
+    }
+    .tag {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1976d2;
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 0.95rem;
+      margin: 0 4px 4px 0;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #2196f3;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem auto;
+      display: block;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @media (max-width: 800px) {
+      .container { margin: 0.5rem; padding: 1rem; }
+      .accordion-content { padding: 14px 8px 12px 8px; }
+      .accordion-title { padding: 12px 10px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🍽️ Recipe Recommender</h2>
+    <form id="ingredientForm">
+      <label for="ingredients">Tell me which Ingredients you have:</label>
+      <textarea id="ingredients" rows="4" placeholder="chicken, rice, tomatoes"></textarea>
+      <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+        <label for="modelSelect" style="margin: 0; font-weight: normal;">Model:</label>
+        <select id="modelSelect" style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #ccc;">
+          <option value="cosine">Cosine Similarity</option>
+        </select>
+        <button type="submit">See what to eat</button>
+        <button type="button" id="clearBtn" style="background: #f44336;">Clear</button>
+      </div>
+    </form>
+    <div class="accordion" id="results"></div>
+  </div>
+  <script>
+    const form = document.getElementById('ingredientForm');
+    const results = document.getElementById('results');
+    const clearBtn = document.getElementById('clearBtn');
+    const ingredientsInput = document.getElementById('ingredients');
+    let expanded = {};
+
+    form.onsubmit = async function(e) {
+      e.preventDefault();
+      results.innerHTML = '<div class="spinner"></div><div style="text-align:center;">Finding recipes...</div>';
+      expanded = {};
+      const ingredients = ingredientsInput.value;
+      // Model selection for future extensibility
+      // const model = document.getElementById('modelSelect').value;
+      try {
+        const res = await fetch('http://localhost:5000/api/recommend-recipes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ingredients })
+        });
+        const data = await res.json();
+        showResults(data);
+      } catch (err) {
+        results.innerHTML = '<div style="color:red; text-align:center;">❌ Error fetching recipes.</div>';
+      }
+    };
+
+    clearBtn.onclick = function() {
+      ingredientsInput.value = '';
+      results.innerHTML = '';
+      expanded = {};
+    };
+
+    function showResults(recipes) {
+      if (!recipes.length) {
+        results.innerHTML = '<div style="text-align:center; color:#b71c1c; font-size:1.1rem;">No recipes found. Try different ingredients!</div>';
+        return;
+      }
+      results.innerHTML = '';
+      recipes.forEach((r, idx) => {
+        const item = document.createElement('div');
+        item.className = 'accordion-item fade-in';
+        const title = document.createElement('div');
+        title.className = 'accordion-title';
+        title.innerHTML = `<span style="transform: rotate(${expanded[idx] ? 90 : 0}deg);">▶</span> ${r["TranslatedRecipeName"]}`;
+        title.onclick = () => {
+          expanded[idx] = !expanded[idx];
+          showResults(recipes);
+        };
+        item.appendChild(title);
+        if (expanded[idx]) {
+          const content = document.createElement('div');
+          content.className = 'accordion-content fade-in';
+          // Placeholder image (could be replaced with real images if available)
+          content.innerHTML = `
+            <div style="text-align:center; margin-bottom:1rem;">
+              <img class="recipe-img" src="https://source.unsplash.com/400x200/?food,recipe&sig=${idx}" alt="Recipe Image" />
+            </div>
+            <b>Ingredients:</b>
+            <ul>${r["Cleaned-Ingredients"].map(ing => `<li><span class='tag'>${ing}</span></li>`).join('')}</ul>
+            <b>Instructions:</b>
+            <ol>${r["TranslatedInstructions"].map(step => `<li>${step.trim()}</li>`).join('')}</ol>
+          `;
+          item.appendChild(content);
+        }
+        results.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>
